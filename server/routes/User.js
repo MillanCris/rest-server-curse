@@ -5,7 +5,7 @@ const app = express();
 const User = require('../models/UserModel');
 const { tokenValidation, roleValidation } = require('../middlewares/authentication');
 
-app.get('/user', [tokenValidation, roleValidation], function(req, res) {
+app.get('/user', [tokenValidation], function(req, res) {
     let offset = Number(req.query.offset) || 0;
     let limit = Number(req.query.limit) || 5;
     console.log('object');
