@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const app = express();
 const User = require('../models/UserModel');
+const { tokenValidation, roleValidation } = require('../middlewares/authentication');
 
-
-app.get('/user', function(req, res) {
+app.get('/user', [tokenValidation, roleValidation], function(req, res) {
     let offset = Number(req.query.offset) || 0;
     let limit = Number(req.query.limit) || 5;
     console.log('object');
@@ -37,7 +37,7 @@ app.get('/user', function(req, res) {
 });
 
 
-app.post('/user', function(req, res) {
+app.post('/user', [tokenValidation, roleValidation], function(req, res) {
     let body = req.body;
 
     let user = new User({
@@ -62,7 +62,7 @@ app.post('/user', function(req, res) {
     });
 })
 
-app.put('/user/:id', function(req, res) {
+app.put('/user/:id', [tokenValidation, roleValidation], function(req, res) {
     console.log('entre');
     let user_id = req.params.id;
     let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'status']);
@@ -80,6 +80,25 @@ app.put('/user/:id', function(req, res) {
             user: userDB
         })
     })
+});
+
+app.delete('/user/:id', [tokenValidation, roleValidation], function(req, res) {
+    let user_id = req.params.id;
+
+    User.findByIdAndUpdate(user_id, { status: false }, { new: true, runValidators: true }, (err, userDB) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+
+        return res.json({
+            ok: true,
+            user: userDB
+        })
+    })
+
 });
 
 
@@ -104,25 +123,6 @@ app.put('/user/:id', function(req, res) {
 //         })
 //     })
 // });
-
-app.delete('/user/:id', function(req, res) {
-    let user_id = req.params.id;
-
-    User.findByIdAndUpdate(user_id, { status: false }, { new: true, runValidators: true }, (err, userDB) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
-            })
-        }
-
-        return res.json({
-            ok: true,
-            user: userDB
-        })
-    })
-
-});
 
 
 module.exports = app;
