@@ -26,6 +26,12 @@ process.env.SEED = process.env.SEED || 'DEV-SEED';
 
 
 //========================
+//     Google Sign
+//========================
+process.env.CLIENT_ID = process.env.CLIENT_ID || '1004319142891-v9ghcullfhkb59prdhq5km78uccfil34.apps.googleusercontent.com';
+
+
+//========================
 //     Data Base
 //========================
 
